@@ -4,6 +4,7 @@ import time
 import json
 import sys
 import imp
+import pandas as pd
 imp.reload(sys)
 
 
@@ -19,7 +20,7 @@ def main():
     #queries = ['2017']
     # Query and request from API are different!
     # Number of track query need to make
-    num_tracks_per_query = 10000
+    num_tracks_per_query = 100
 
     for query in queries:
         
@@ -93,9 +94,11 @@ def main():
              df4, on='album_id', how='outer')
         
         filename = query + '.csv'                      
+        print(df)
         
-        df.to_csv(filename, sep='\t')
-        
+        # df.to_csv(filename, sep='\t')
+        df.to_csv(filename, header=True, index=False, encoding='utf-8')
+
         print ('finish')
         print (query)
 
@@ -105,8 +108,10 @@ def API_search_request(keywords, search_type, results_limit, results_offset, ltr
     lim = str(results_limit)
 
     url = 'https://api.spotify.com/v1/search?q=year:'+ keywords +'&type=' + search_type +'&offset='+ off +'&limit=' + lim
+    ## access_token will expire soon
+    access_token = (  'Bearer BQDLlVg79wwSbKNvSiHjwk73pFIm4bDYRmkwxFFoxMhQYCgltst27sqdP3Rjj8YUilcIzNPhcZbghydnh8g')
 
-    r = requests.get(url)
+    r = requests.get(url, headers={"Accept": "application/json" , "Authorization": access_token})
 
     if r: 
        j = r.json()
@@ -153,20 +158,13 @@ def API_search_request(keywords, search_type, results_limit, results_offset, ltr
 
 def API_get_audio_feature(songids, audioF):
     
-    #print(songids)
+    # print(songids)
     #print '>> call art several'
     track_ids = ','.join(songids)
 
     url = 'https://api.spotify.com/v1/audio-features?ids=' + track_ids  
     ## access_token will expire soon
-    access_token = (  'Bearer BQDAZNalQ6KCd8pRM0Exu3D-tzdeodFYL86pdq8kz'
-                      'qN8i5gqeLMNeCgyPmZ1B3mgQ2YGd29tL06jxeNzOMkhmi4GM'
-                      'QQLQ_ZfQUroBMRSMj10IOjEo-cX7YsfzH_v3eUlN4wXgDd4z'
-                      'njNqrPu-MI9qRz3_jyb44urQ7J5TeOeWk4kvHKfD36TplacQ'
-                      'DeYJe49DsaAQWuCSe5kdt1r7r0GqugSH85vOaa5qrqMaGbKM'
-                      'DnZ-2aWzuLUE37Vh3U2MR3VEdgHPIxlQtC_vfTBwiMZZcY55'
-                      'Q1aZuKSrGL9A6MC2hUi4CgRMD1mXwE9l8bLJQ')
-    
+    access_token = (  'Bearer BQDLlVg79wwSbKNvSiHjwk73pFIm4bDYRmkwxFFoxMhQYCgltst27sqdP3Rjj8YUilcIzNPhcZbghydnh8g')
     
     r = requests.get(url, headers={"Accept": "application/json" , "Authorization": access_token})
     
@@ -262,4 +260,5 @@ def API_get_albums(album_ids, album_data):
 
 if __name__ == '__main__':
     main()
+
 
